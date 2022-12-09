@@ -3,9 +3,10 @@ from typing import Iterator
 
 
 def get_numbers(filename) -> Iterator[int]:
-    lines = Path(filename).read_text().rstrip().split('\n')
-    return (int(line) for line in lines)
+    return (int(line) for line in get_lines(filename))
 
+def get_lines(filename: str) -> list[str]:
+    return Path(filename).read_text().rstrip().split('\n')
 
 def list_to_int(nums_in_strings: list[str]) -> list[int]:
     return [int(num_in_string) for num_in_string in nums_in_strings]

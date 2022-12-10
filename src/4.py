@@ -13,11 +13,9 @@ class Range:
     def overlaps(self, other: 'Range') -> bool:
         return self.start <= other.start <= self.stop or self.start <= other.stop <= self.stop
 
-lines = get_lines('../data/4.txt')
-
 num_contained = 0
 num_overlaps = 0
-for line in lines:
+for line in get_lines('../data/4.txt'):
     r1, r2 = [Range(r) for r in line.split(',')]
     if r1.contains(r2) or r2.contains(r1):
         num_contained += 1

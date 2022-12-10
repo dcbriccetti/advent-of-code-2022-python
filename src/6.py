@@ -1,8 +1,9 @@
 from pathlib import Path
 
 data = Path('../data/6.txt').read_text().rstrip()
-for i in range(len(data) - 4):
-    four_chars = data[i:i + 4]
-    if len(set(four_chars)) == 4:
-        print(i + 4)
-        break
+for marker_len in (4, 14):
+    for i in range(len(data) - marker_len):
+        four_chars = data[i:i + marker_len]
+        if len(set(four_chars)) == marker_len:
+            print(i + marker_len)
+            break

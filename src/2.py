@@ -35,11 +35,11 @@ play_points_by_play = {
     Play.SCISSORS:  3,
 }
 
-win_points = 6
-draw_points = 3
+WIN_POINTS = 6
+DRAW_POINTS = 3
 
 rounds: list[tuple[str, str]] = [(opponent_code, player_code)
-        for opponent_code, player_code in get_string_groups('../data/2.txt')]
+                                 for opponent_code, player_code in get_string_groups('../data/2.txt')]
 
 def part1():
     score = 0
@@ -65,9 +65,9 @@ def part2():
 
 def compute_points(opponent_play: Play, player_play: Play) -> int:
     play_points: int = play_points_by_play[player_play]
-    return play_points + \
-        draw_points if opponent_play == player_play else \
-        play_points + win_points if beats[player_play] == opponent_play else play_points
+    return play_points + (
+        DRAW_POINTS if opponent_play == player_play else
+        WIN_POINTS if beats[player_play] == opponent_play else 0)
 
 part1()
 part2()

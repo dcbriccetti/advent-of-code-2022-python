@@ -51,5 +51,47 @@ def part1() -> None:
                 num_visible += 1
     print(num_visible)
 
+def part2() -> None:
+    def find_scenic_score(irow: int, icol: int):
+        height = forest[irow, icol]
 
-part1()
+        lsc = 0
+        for ic in range(icol - 1, -1, -1):
+            lsc += 1
+            if forest[irow, ic] >= height:
+                break
+
+        rsc = 0
+        for ic in range(icol + 1, cols):
+            rsc += 1
+            if forest[irow, ic] >= height:
+                break
+
+        usc = 0
+        for ir in range(irow - 1, -1, -1):
+            usc += 1
+            if forest[ir, icol] >= height:
+                break
+
+        dsc = 0
+        for ir in range(irow + 1, rows):
+            dsc += 1
+            if forest[ir, icol] >= height:
+                break
+
+        score = lsc * rsc * usc * dsc
+        print(f'{lsc=} {rsc=} {usc=} {dsc} = {score}')
+        return score
+
+    forest = np.array([[int(char) for char in line] for line in get_lines('../data/8.txt')])
+    rows, cols = forest.shape
+    highest_score = 0
+    for irow in range(1, rows - 1):
+        for icol in range(1, cols - 1):
+            score = find_scenic_score(irow, icol)
+            if score > highest_score:
+                highest_score = score
+    print(highest_score)
+
+# part1()
+part2()

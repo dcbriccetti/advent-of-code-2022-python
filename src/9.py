@@ -39,16 +39,20 @@ def move_tail(tail: Point2D, head: Point2D) -> Point2D:
     limited_dy = 0 if diff.y == 0 else diff.y // abs(diff.y)
     return Point2D(tail.x + limited_dx, tail.y + limited_dy)
 
-hp = Point2D(0, 0)
-tp = Point2D(0, 0)
-tail_visited: set[Point2D] = {tp}
+for tail_segments in (1, 9):
+    origin = Point2D(0, 0)
+    hp = origin
+    tp = [origin for _ in range(tail_segments)]
+    tail_visited: set[Point2D] = {tp[-1]}
 
-for line in get_lines('../data/9.txt'):
-    cmd, num_str = line.split()
-    num = int(num_str)
-    for _ in range(num):
-        hp = hp.moved(cmd)
-        tp = move_tail(tp, hp)
-        tail_visited.add(tp)
+    for line in get_lines('../data/9.txt'):
+        cmd, num_str = line.split()
+        num = int(num_str)
+        for _ in range(num):
+            hp = hp.moved(cmd)
+            tp[0] = move_tail(tp[0], hp)
+            for i in range(1, tail_segments):
+                tp[i] = move_tail(tp[i], tp[i-1])
+            tail_visited.add(tp[-1])
 
-print(len(tail_visited))
+    print(len(tail_visited))

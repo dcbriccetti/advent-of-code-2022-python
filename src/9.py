@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-
 from shared import get_lines
 
 @dataclass
@@ -25,9 +24,9 @@ class Point2D:
     def subtract(self, other: 'Point2D') -> 'Point2D':
         return Point2D(self.x - other.x, self.y - other.y)
 
-def move_tail(tail: Point2D, head: Point2D) -> Point2D:
-    diff = head.subtract(tail)
-    if tail == head:  # Same pos, no need to move
+def move_tail_segment(tail: Point2D, following: Point2D) -> Point2D:
+    diff = following.subtract(tail)
+    if tail == following:  # Same pos, no need to move
         return tail
     if diff.y == 0 and abs(diff.x) == 1:
         return tail  # Tail is adjacent horizontally, no move
@@ -50,9 +49,9 @@ for tail_segments in (1, 9):
         num = int(num_str)
         for _ in range(num):
             hp = hp.moved(cmd)
-            tp[0] = move_tail(tp[0], hp)
+            tp[0] = move_tail_segment(tp[0], hp)
             for i in range(1, tail_segments):
-                tp[i] = move_tail(tp[i], tp[i-1])
+                tp[i] = move_tail_segment(tp[i], tp[i - 1])
             tail_visited.add(tp[-1])
 
     print(len(tail_visited))

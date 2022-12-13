@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from shared import get_lines
+from shared import get_lines, sign
 import numpy as np
 
 def part1() -> None:
@@ -12,9 +12,6 @@ def part1() -> None:
             return f'{self.height}{str(self.visible)[0]}'
 
     def scan(row_start: int, row_end: int, col_start: int, col_end: int) -> None:
-        def sign(num: int) -> int:
-            return 0 if num == 0 else num // abs(num)
-
         irow = row_start
         icol = col_start
         dr = sign(row_end - row_start)

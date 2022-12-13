@@ -19,3 +19,6 @@ def get_number_groups(filename) -> Iterator[list[int]]:
 def get_string_groups(filename) -> Iterator[list[str]]:
     groups: list[str] = Path(filename).read_text().rstrip().split('\n')
     return (group.split() for group in groups)
+
+def sign(num: int) -> int:
+    return 0 if num == 0 else num // abs(num)

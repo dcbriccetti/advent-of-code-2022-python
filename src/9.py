@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from shared import get_lines
+from shared import get_lines, sign
 
 @dataclass
 class Point2D:
@@ -24,19 +24,19 @@ class Point2D:
     def subtract(self, other: 'Point2D') -> 'Point2D':
         return Point2D(self.x - other.x, self.y - other.y)
 
-def move_tail_segment(tail: Point2D, following: Point2D) -> Point2D:
-    diff = following.subtract(tail)
-    if tail == following:  # Same pos, no need to move
-        return tail
+def move_tail_segment(segment: Point2D, following: Point2D) -> Point2D:
+    diff = following.subtract(segment)
+    if segment == following:  # Same pos, no need to move
+        return segment
     if diff.y == 0 and abs(diff.x) == 1:
-        return tail  # Tail is adjacent horizontally, no move
+        return segment  # Segment is adjacent horizontally, no move
     if diff.x == 0 and abs(diff.y) == 1:
-        return tail  # Tail is adjacent vertically, no move
+        return segment  # Segment is adjacent vertically, no move
     if abs(diff.x) == 1 and abs(diff.y) == 1:
-        return tail  # Tail is diagonally adjacent, no move
-    limited_dx = 0 if diff.x == 0 else diff.x // abs(diff.x)
-    limited_dy = 0 if diff.y == 0 else diff.y // abs(diff.y)
-    return Point2D(tail.x + limited_dx, tail.y + limited_dy)
+        return segment  # Segment is diagonally adjacent, no move
+    limited_dx = sign(diff.x)
+    limited_dy = sign(diff.y)
+    return Point2D(segment.x + limited_dx, segment.y + limited_dy)
 
 for tail_segments in (1, 9):
     origin = Point2D(0, 0)

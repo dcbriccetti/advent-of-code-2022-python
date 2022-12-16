@@ -13,22 +13,28 @@ class Summer:
         if cycle in Summer.check_cycles:
             strength = cycle * x
             self.sum += strength
-            print(f'{c=}, {x=}, {strength=}, {self.sum=}')
+            # print(f'{c=}, {x=}, {strength=}, {self.sum=}')
 
 summer = Summer()
 
+def increment_cycle() -> None:
+    global c
+    cm = c % 40
+    if cm == 0:
+        print()
+    print('#' if abs(cm - x) <= 1 else '.', end='')
+    c += 1
+    summer.sum_if_time(c, x)
+
 for line in get_lines('../data/10.txt'):
-    print(line)
+    # print(f'{line}, {c=}, {x=}')
     if line == 'noop':
-        c += 1
-        summer.sum_if_time(c, x)
+        increment_cycle()
     elif line.startswith('addx '):
         v = int(line.split()[1])
-        c += 1
-        summer.sum_if_time(c, x)
-        c += 1
-        summer.sum_if_time(c, x)
+        increment_cycle()
+        increment_cycle()
         x += v
-    print(f'{c=}, {x=}')
+    # print(f'{c=}, {x=}')
 
-print(summer.sum)
+# print(summer.sum)

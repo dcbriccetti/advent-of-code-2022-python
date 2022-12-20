@@ -22,35 +22,34 @@ class Node:
     loc: Point
     frm: Optional['Node'] = None
 
-start: Point = Point(0, 0)
+prescribed_start: Point
+starts: list[Point] = []
 end: Point = Point(0, 0)
 
 def process_cell(irow: int, icol: int, ch: str) -> int:
-    global start, end
+    global prescribed_start, end
     match ch:
         case 'S':
             c = 'a'
-            start = Point(irow, icol)
+            prescribed_start = Point(irow, icol)
+            starts.append(prescribed_start)
         case 'E':
             c = 'z'
             end = Point(irow, icol)
+        case 'a':
+            starts.append(Point(irow, icol))
+            c = ch
         case _:
             c = ch
     return ord(c) - ord('a') + 1
 
 heights = [
     [process_cell(r, c, char) for c, char in enumerate(line)]
-    for r, line in enumerate(get_lines('/Users/daveb/devel/AOC-2022/data/12_test.txt'))
+    for r, line in enumerate(get_lines('/Users/daveb/devel/AOC-2022/data/12.txt'))
 ]
 
-q = [Node(start, None)]
-seen: set[Point] = {start}
-
-# print(heights)
 num_rows = len(heights)
 num_cols = len(heights[0])
-print(start, end, q, seen, num_rows, num_cols)
-
 
 def enqueue_surrounding_candidates(around: Node):
     around_height = heights[around.loc.row][around.loc.col]
@@ -66,21 +65,32 @@ def enqueue_surrounding_candidates(around: Node):
                     seen.add(discovered_point)
                     q.append(Node(discovered_point, around))
 
-while q:
-    node = q.pop(0)
-    # print(f'popped: {node}')
-    if node.loc == end:
-        print('found end')
-        break
-    enqueue_surrounding_candidates(node)
+fewest_moves: Optional[int] = None
 
-moves = 0
-n = node
-with open('path.txt', 'w') as f:
-    while n.frm:
-        f.write(f'{n.loc.row} {n.loc.col} {heights[n.loc.row][n.loc.col]}\n')
-        moves += 1
-        n = n.frm
-    f.write(f'{n.loc.row} {n.loc.col} {heights[n.loc.row][n.loc.col]}\n')
+for start in starts:
+    q = [Node(start, None)]
+    seen: set[Point] = {start}
+    found_end = False
 
-    print(moves)
+    while q:
+        node = q.pop(0)
+        if node.loc == end:
+            print('found end')
+            found_end = True
+            break
+        enqueue_surrounding_candidates(node)
+
+    if found_end:
+        moves = 0
+        n = node
+        with open(f'path{start}.txt', 'w') as f:
+            while n.frm:
+                f.write(f'{n.loc.row} {n.loc.col} {heights[n.loc.row][n.loc.col]}\n')
+                moves += 1
+                n = n.frm
+            f.write(f'{n.loc.row} {n.loc.col} {heights[n.loc.row][n.loc.col]}\n')
+
+            print(f'starting at {start}, the shortest route is {moves} moves')
+            if fewest_moves is None or fewest_moves > moves:
+                fewest_moves = moves
+print(f'Fewest moves: {fewest_moves}')

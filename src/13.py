@@ -2,7 +2,8 @@ from enum import Enum, auto
 from pathlib import Path
 
 sum_ordered_indexes = 0
-groups = Path('../data/13.txt').read_text().rstrip().split('\n\n')
+data = Path('../data/13.txt').read_text().rstrip()
+groups = data.split('\n\n')
 
 class State(Enum):
     ORDERED = auto()
@@ -25,16 +26,14 @@ def ordered(left: list, right: list) -> State:
             return State.ORDERED
         elif li > ri:
             return State.UNORDERED
-    if right and not left:
-        return State.ORDERED
-    if left and not right:
-        return State.UNORDERED
-    return State.UNKNOWN
+    return State.ORDERED if right and not left else \
+        State.UNORDERED if left and not right else \
+        State.UNKNOWN
 
 for i, group in enumerate(groups, 1):
     left, right = [eval(p) for p in group.split('\n')]
-    print(left, right)
     if ordered(left, right) == State.ORDERED:
         sum_ordered_indexes += i
 
 print(sum_ordered_indexes)
+

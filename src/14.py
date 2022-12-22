@@ -41,8 +41,10 @@ class Sand:
     loc: Point
     drops = [Point(x, y) for x, y in [(0, 1), (-1, 1), (1, 1)]]
 
-    def moved(self):
-        can_go = [self.loc + drop for drop in self.drops if self.loc + drop not in space]
+    def moved(self, at_floor: (int, bool)) -> Optional['Sand']:
+        can_go = [self.loc + drop for drop in self.drops
+                  if self.loc + drop not in space and
+                  not at_floor((self.loc + drop).y)]
         return Sand(can_go[0]) if can_go else None
 
 def add_rocks():
@@ -55,20 +57,23 @@ def add_rocks():
                 current = current.point_towards(last)
         space[current] = Matter.ROCK
 
-def move_sand():
+def move_sand(at_floor: (int, bool)):
     sand_falls_before_abyss = 0
     while True:
         sand_falls_before_abyss += 1
         sand = Sand(Point(500, 0))
         moving = True
         while moving and sand.loc.y < ABYSS_CHECK_LIMIT:
-            sand_at_new_loc = sand.moved()
+            sand_at_new_loc = sand.moved(at_floor)
             if sand_at_new_loc:
-                sand = sand_at_new_loc  # print(f'sand now at {sand.loc}')
+                sand = sand_at_new_loc
+                # print(f'sand now at {sand.loc}')
             else:
-                # print('sand rests')
+                # print(f'sand rests at {sand.loc}')
                 space[sand.loc] = Matter.SAND
                 moving = False
+        if sand.loc == Point(500, 0):
+            break
         if moving:
             sand_falls_before_abyss -= 1
             break
@@ -92,11 +97,17 @@ def get_cave_dimensions() -> (int, int, int, int):
     print(f'{min_x=}, {max_x=}, {min_y=}, {max_y=}')
     return min_x, max_x, min_y, max_y
 
-space: dict[Point, Matter] = dict()
-lines = get_lines('../data/14.txt')
+def no_floor(_: int) -> bool:
+    return False
 
-add_rocks()
-min_x, max_x, min_y, max_y = get_cave_dimensions()
-floor_y = max_y + 2
-move_sand()
-save_cave_to_file(min_x, max_x, min_y, max_y)
+def at_floor(y: int) -> bool:
+    return y == floor_y
+
+for floor_fn in (no_floor, at_floor):  # Part 1, Part 2
+    space: dict[Point, Matter] = dict()
+    lines = get_lines('../data/14.txt')
+    add_rocks()
+    min_x, max_x, min_y, max_y = get_cave_dimensions()
+    floor_y = max_y + 2
+    move_sand(floor_fn)
+    save_cave_to_file(min_x, max_x, min_y, max_y)
